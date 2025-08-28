@@ -12,7 +12,9 @@ const Contact = ({ listing, onClose }) => {
     const fetchAgents = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`/Api/Auth/${listing.userref}`);
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/Api/Auth/${listing.userref}`
+        );
         const data = await res.json();
         setAgent(data);
       } catch (error) {
@@ -42,7 +44,6 @@ const Contact = ({ listing, onClose }) => {
     <>
       {Agent && (
         <div className="relative max-w-md mx-auto bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200">
-          
           {/* Close Button */}
           <button
             onClick={onClose}
@@ -53,12 +54,17 @@ const Contact = ({ listing, onClose }) => {
           </button>
 
           <div className="p-6">
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">{Agent.username}</h1>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">
+              {Agent.username}
+            </h1>
           </div>
 
           {/* Email Input */}
           <div className="px-6 pb-4">
-            <label htmlFor="customerEmail" className="block text-gray-700 font-medium mb-2">
+            <label
+              htmlFor="customerEmail"
+              className="block text-gray-700 font-medium mb-2"
+            >
               Your Email
             </label>
             <input
@@ -73,7 +79,10 @@ const Contact = ({ listing, onClose }) => {
 
           {/* Message Textarea */}
           <div className="px-6 pb-4">
-            <label htmlFor="message" className="block text-gray-700 font-medium mb-2">
+            <label
+              htmlFor="message"
+              className="block text-gray-700 font-medium mb-2"
+            >
               Your Message
             </label>
             <textarea

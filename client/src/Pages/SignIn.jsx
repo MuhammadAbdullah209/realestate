@@ -1,14 +1,18 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import { useDispatch, useSelector } from 'react-redux';
-import { SignInStart, SignInSuccess, SignInFailure } from '../Redux/user/userSlice';
-import 'react-toastify/dist/ReactToastify.css';
-import OAuth from '../Components/OAuth';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  SignInStart,
+  SignInSuccess,
+  SignInFailure,
+} from "../Redux/user/userSlice";
+import "react-toastify/dist/ReactToastify.css";
+import OAuth from "../Components/OAuth";
 const SignIn = () => {
   const [FormData, SetFormData] = useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
 
   const dispatch = useDispatch();
@@ -19,7 +23,7 @@ const SignIn = () => {
   const HandleChange = (e) => {
     SetFormData({
       ...FormData,
-      [e.target.id]: e.target.value
+      [e.target.id]: e.target.value,
     });
 
     if (error) dispatch(SignInFailure(null)); // Clear error on input change
@@ -30,23 +34,26 @@ const SignIn = () => {
     dispatch(SignInStart());
 
     try {
-      const res = await fetch('/Api/auth/SignIn', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(FormData)
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/Api/auth/SignIn`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(FormData),
+        }
+      );
 
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message || 'Sign In failed');
+        throw new Error(data.message || "Sign In failed");
       }
 
-      toast.success('User signed in successfully!');
+      toast.success("User signed in successfully!");
       dispatch(SignInSuccess(data));
-      Navigator('/');
+      Navigator("/");
     } catch (err) {
-      dispatch(SignInFailure('User Not Found'));
+      dispatch(SignInFailure("User Not Found"));
       // toast.error('User Not Found');
     }
   };
@@ -59,7 +66,9 @@ const SignIn = () => {
     <>
       <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
         <div className="bg-white p-8 rounded shadow-md w-full max-w-md relative">
-          <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">Sign In</h2>
+          <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">
+            Sign In
+          </h2>
 
           {error && (
             <div className="mb-4 p-3 rounded-md bg-red-100 text-red-700 border border-red-300 relative">
@@ -96,16 +105,19 @@ const SignIn = () => {
             <button
               type="submit"
               disabled={Loading}
-              className={`w-full text-white py-2 rounded-md transition duration-200 ${Loading ? 'bg-green-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'
-                }`}
+              className={`w-full text-white py-2 rounded-md transition duration-200 ${
+                Loading
+                  ? "bg-green-400 cursor-not-allowed"
+                  : "bg-green-600 hover:bg-green-700"
+              }`}
             >
-              {Loading ? 'Signing In...' : 'SIGN IN'}
+              {Loading ? "Signing In..." : "SIGN IN"}
             </button>
             <OAuth />
           </form>
 
           <p className="text-center text-sm text-gray-600 mt-4">
-            Don’t have an account?{' '}
+            Don’t have an account?{" "}
             <Link to="/SignUp" className="text-blue-500 hover:underline">
               Sign Up
             </Link>
