@@ -5,6 +5,9 @@ const colors = require("colors");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
+// Database connection
+const { connectDB } = require("./config/database");
+
 // Routes
 const userRoutes = require("./Routes/user.route.js");
 const profileRoutes = require("./Routes/profileRoutes.js");
@@ -13,6 +16,9 @@ const routerr = require("./Routes/listingimage.route.js");
 
 const app = express();
 dotenv.config();
+
+// Connect to Database
+connectDB();
 
 // Middleware
 app.use(express.json());
@@ -23,12 +29,6 @@ app.use(
   })
 );
 app.use(cookieParser());
-
-// DB Connection
-mongoose
-  .connect(process.env.MONGO)
-  .then(() => console.log("✅ DB Connected Successfully!".green))
-  .catch((err) => console.log("❌ DB Connection Error:", err));
 
 // Basic route
 app.get("/", (req, res) => {
