@@ -44,63 +44,70 @@ const CreateListing = () => {
     }
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    setloading(true);
-    setError(false);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setloading(true);
+      setError(false);
 
-    // Step 1: Create listing (without images)
-    const res = await fetch("/Api/Listings/Create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...formdata,
-        userref: currentUser._id,
-      }),
-    });
+      // Step 1: Create listing (without images)
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/Api/Listings/Create`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...formdata,
+            userref: currentUser._id,
+          }),
+        }
+      );
 
-    const data = await res.json();
-    if (data.success === false) {
-      setError(data.message || "Something went wrong");
-      setloading(false);
-      return;
-    }
-
-    const listingId = data.listing._id;
-
-    // Step 2: Upload images if any
-    if (files.length > 0) {
-      const formDataToSend = new FormData();
-
-      // must match backend: upload.array("images", 6)
-      files.forEach((file) => {
-        formDataToSend.append("images", file);
-      });
-
-      const uploadRes = await fetch(`/Api/Listing-uploads/upload/${listingId}`, {
-        method: "POST",
-        body: formDataToSend, // no headers needed for FormData
-      });
-
-      const uploadData = await uploadRes.json();
-      if (uploadData.success === false) {
-        setError(uploadData.message || "Image upload failed");
+      const data = await res.json();
+      if (data.success === false) {
+        setError(data.message || "Something went wrong");
         setloading(false);
         return;
       }
+
+      const listingId = data.listing._id;
+
+      // Step 2: Upload images if any
+      if (files.length > 0) {
+        const formDataToSend = new FormData();
+
+        // must match backend: upload.array("images", 6)
+        files.forEach((file) => {
+          formDataToSend.append("images", file);
+        });
+
+        const uploadRes = await fetch(
+          `${
+            import.meta.env.VITE_API_URL
+          }/Api/Listing-uploads/upload/${listingId}`,
+          {
+            method: "POST",
+            body: formDataToSend, // no headers needed for FormData
+          }
+        );
+
+        const uploadData = await uploadRes.json();
+        if (uploadData.success === false) {
+          setError(uploadData.message || "Image upload failed");
+          setloading(false);
+          return;
+        }
+      }
+
+      setloading(false);
+      Navigator(`/Listing/${listingId}`);
+    } catch (error) {
+      setError(error.message);
+      setloading(false);
     }
-
-    setloading(false);
-    Navigator(`/Listing/${listingId}`);
-  } catch (error) {
-    setError(error.message);
-    setloading(false);
-  }
-};
-
+  };
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
@@ -174,8 +181,7 @@ const handleSubmit = async (e) => {
           <input
             type="text"
             name="name"
-            
-              data-gramm="false"
+            data-gramm="false"
             placeholder="Name"
             className="input"
             value={formdata.name}
@@ -191,7 +197,7 @@ const handleSubmit = async (e) => {
             placeholder="Address"
             className="input col-span-3"
             value={formdata.address}
-              data-gramm="false"
+            data-gramm="false"
             required
             onChange={handleChange}
           />
@@ -204,7 +210,7 @@ const handleSubmit = async (e) => {
             name="descrption"
             placeholder="Write a detailed description about the property..."
             rows="5"
-              data-gramm="false"
+            data-gramm="false"
             className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
             onChange={handleChange}
             value={formdata.descrption}

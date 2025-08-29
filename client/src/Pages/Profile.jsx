@@ -1,27 +1,27 @@
-import React, { useRef, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import axios from 'axios';
+import React, { useRef, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
 import {
   DeleteUserFailure,
   DeleteUserStart,
   DeleteUserSuccess,
   SignInSuccess,
   SignOutStart,
-  SignOutSuccess
-} from '../Redux/user/userSlice';
-import { Link } from 'react-router-dom';
+  SignOutSuccess,
+} from "../Redux/user/userSlice";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const imgRef = useRef(null);
   const [formData, setFormData] = useState({
-    username: currentUser?.username || '',
-    email: currentUser?.email || '',
-    password: '',
-    avatar: currentUser?.avatar || '',
+    username: currentUser?.username || "",
+    email: currentUser?.email || "",
+    password: "",
+    avatar: currentUser?.avatar || "",
   });
-  const [preview, setPreview] = useState(currentUser?.avatar || '');
+  const [preview, setPreview] = useState(currentUser?.avatar || "");
   const [loading, setLoading] = useState(false);
   const [showlisting, setshowlisting] = useState([]);
   const [showlistingerror, setshowlistingerror] = useState(false);
@@ -40,7 +40,9 @@ const Profile = () => {
       const formDataUpload = new FormData();
       formDataUpload.append("profile", file);
       const res = await axios.post(
-        `/Api/Profile/upload-profile/${currentUser._id}`,
+        `${import.meta.env.VITE_API_URL}/Api/Profile/upload-profile/${
+          currentUser._id
+        }`,
         formDataUpload,
         {
           withCredentials: true,
@@ -63,20 +65,23 @@ const Profile = () => {
       const dataToSend = { ...formData };
       if (!dataToSend.password) delete dataToSend.password;
       const res = await axios.post(
-        `/Api/Auth/Update/${currentUser._id}`,
+        `${import.meta.env.VITE_API_URL}/Api/Auth/Update/${currentUser._id}`,
         dataToSend,
         {
           withCredentials: true,
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
       dispatch(SignInSuccess(res.data));
-      alert('Profile updated successfully!');
+      alert("Profile updated successfully!");
     } catch (err) {
-      console.error('Failed to update user:', err.response?.data || err.message);
-      alert('Failed to update profile.');
+      console.error(
+        "Failed to update user:",
+        err.response?.data || err.message
+      );
+      alert("Failed to update profile.");
     } finally {
       setLoading(false);
     }
@@ -85,9 +90,12 @@ const Profile = () => {
   const HandleDeleteAccount = async () => {
     try {
       dispatch(DeleteUserStart());
-      const res = await fetch(`/Api/Auth/Delete/${currentUser._id}`, {
-        method: 'DELETE'
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/Api/Auth/Delete/${currentUser._id}`,
+        {
+          method: "DELETE",
+        }
+      );
       const data = await res.json();
       if (data.success === false) {
         dispatch(DeleteUserFailure(data.message));
@@ -103,10 +111,13 @@ const Profile = () => {
   const HanldeSignOutUser = async () => {
     try {
       dispatch(SignOutStart());
-      const res = await fetch(`/Api/Auth/SignOut/${currentUser._id}`, {
-        method: 'GET',
-        credentials: 'include'
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/Api/Auth/SignOut`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
       const data = await res.json();
       if (data.success === false) {
         dispatch(DeleteUserFailure(data.message));
@@ -121,17 +132,22 @@ const Profile = () => {
   const HandleShowListing = async () => {
     try {
       setshowlistingerror(false);
-      const res = await fetch(`/Api/Auth/Listings/${currentUser._id}`, {
-        method: 'GET',
-        credentials: 'include'
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/Api/Auth/Listings/${currentUser._id}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
       const data = await res.json();
-      console.log('API response for listings:', data);
-      const listingsArray =
-        Array.isArray(data) ? data :
-          Array.isArray(data.data) ? data.data :
-            Array.isArray(data.listings) ? data.listings :
-              [];
+      console.log("API response for listings:", data);
+      const listingsArray = Array.isArray(data)
+        ? data
+        : Array.isArray(data.data)
+        ? data.data
+        : Array.isArray(data.listings)
+        ? data.listings
+        : [];
       setshowlisting(listingsArray);
       if (listingsArray.length === 0) {
         setshowlistingerror(true);
@@ -148,15 +164,20 @@ const Profile = () => {
 
   const handleDeleteListing = async (listingid) => {
     try {
-      const res = await fetch(`/Api/Listings/Delete/${listingid}`, {
-        method: 'DELETE'
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/Api/Listings/Delete/${listingid}`,
+        {
+          method: "DELETE",
+        }
+      );
       const data = await res.json();
       if (data.success === false) {
         console.log(data.message);
         return;
       }
-      setshowlisting((prev) => prev.filter((listing) => listing._id !== listingid));
+      setshowlisting((prev) =>
+        prev.filter((listing) => listing._id !== listingid)
+      );
     } catch (error) {
       console.log(error.message);
     }
@@ -171,7 +192,7 @@ const Profile = () => {
         <input type="file" ref={imgRef} hidden onChange={handleImageUpload} />
         <div className="relative w-24 h-24 rounded-full bg-gray-300 mb-6 border-4 border-white shadow-md overflow-hidden">
           <img
-            src={preview || '/default-profile.png'}
+            src={preview || "/default-profile.png"}
             alt="Profile"
             onClick={() => imgRef.current.click()}
             className="absolute inset-0 w-full h-full object-cover cursor-pointer"
@@ -207,7 +228,7 @@ const Profile = () => {
             className="w-full bg-gray-800 text-white py-2 rounded-md hover:bg-gray-900 disabled:opacity-50"
             disabled={loading}
           >
-            {loading ? 'Updating...' : 'UPDATE'}
+            {loading ? "Updating..." : "UPDATE"}
           </button>
           <Link
             to="/Create-Listing"
@@ -222,13 +243,21 @@ const Profile = () => {
           >
             View Listings
           </button>
-          <p className="text-red-700 mt-5">{showlistingerror && 'Error Showing Listings'}</p>
+          <p className="text-red-700 mt-5">
+            {showlistingerror && "Error Showing Listings"}
+          </p>
         </form>
         <div className="flex space-x-4 mt-6">
-          <button className="text-red-600 font-semibold hover:underline" onClick={HandleDeleteAccount}>
+          <button
+            className="text-red-600 font-semibold hover:underline"
+            onClick={HandleDeleteAccount}
+          >
             Delete Account
           </button>
-          <button className="text-red-600 font-semibold hover:underline" onClick={HanldeSignOutUser}>
+          <button
+            className="text-red-600 font-semibold hover:underline"
+            onClick={HanldeSignOutUser}
+          >
             Sign Out
           </button>
         </div>
@@ -237,7 +266,9 @@ const Profile = () => {
       {/* Listings Section */}
       <div className="w-full max-w-4xl mx-auto mt-6 px-4">
         {showlistingerror && (
-          <p className="text-red-700">Error Showing Listing or no listings found</p>
+          <p className="text-red-700">
+            Error Showing Listing or no listings found
+          </p>
         )}
         {Array.isArray(showlisting) && showlisting.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -258,7 +289,7 @@ const Profile = () => {
                 {listing.imageUrls && listing.imageUrls.length > 0 ? (
                   <img
                     src={listing.imageUrls[0]}
-                    alt={listing.title || 'Listing Thumbnail'}
+                    alt={listing.title || "Listing Thumbnail"}
                     className="w-full h-40 object-cover rounded mb-3"
                   />
                 ) : (
@@ -270,13 +301,13 @@ const Profile = () => {
                 )}
 
                 <h3 className="text-lg font-bold text-gray-800">
-                  {listing.title || listing.name || 'Untitled'}
+                  {listing.title || listing.name || "Untitled"}
                 </h3>
                 <p className="text-gray-600">
-                  Price: ${listing.regularprice || listing.cost || 'N/A'}
+                  Price: ${listing.regularprice || listing.cost || "N/A"}
                 </p>
                 <p className="text-gray-500 text-sm">
-                  Address: {listing.address || 'N/A'}
+                  Address: {listing.address || "N/A"}
                 </p>
                 <div className="flex justify-between mt-4">
                   <Link

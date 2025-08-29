@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { FaMapMarkerAlt, FaBed, FaBath, FaCar } from 'react-icons/fa';
-import { MdCheckCircle, MdCancel } from 'react-icons/md';
-import { useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import Contact from '../Components/Contact';
+import React, { useEffect, useState } from "react";
+import { FaMapMarkerAlt, FaBed, FaBath, FaCar } from "react-icons/fa";
+import { MdCheckCircle, MdCancel } from "react-icons/md";
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import Contact from "../Components/Contact";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-
 
 const ListingPage = () => {
   const params = useParams();
@@ -24,9 +23,14 @@ const ListingPage = () => {
     const fetchlisting = async () => {
       try {
         setloading(true);
-        const res = await fetch(`/Api/Listings/getListing/${params.id}`, {
-          credentials: 'include',
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/Api/Listings/getListing/${
+            params.id
+          }`,
+          {
+            credentials: "include",
+          }
+        );
         const data = await res.json();
         if (data.success === false) {
           setError(true);
@@ -67,24 +71,23 @@ const ListingPage = () => {
                     <SwiperSlide key={index}>
                       <img
                         src={url}
-                        alt={`House ${index +1}`}
+                        alt={`House ${index + 1}`}
                         className="w-full h-64 object-cover rounded-xl"
                       />
                     </SwiperSlide>
                   ))}
                 </div>
               )}
-
             </Swiper>
           </div>
 
-
-
           <div className="flex items-baseline justify-between flex-wrap gap-2">
-            <h2 className="text-3xl font-semibold text-gray-900">{listing.name}</h2>
+            <h2 className="text-3xl font-semibold text-gray-900">
+              {listing.name}
+            </h2>
             <span className="text-green-700 font-bold text-2xl">
               ${listing.regularprice}
-              {listing.type === 'rent' && (
+              {listing.type === "rent" && (
                 <span className="text-lg font-normal"> / month</span>
               )}
             </span>
@@ -96,12 +99,13 @@ const ListingPage = () => {
               {listing.address}
             </p>
             <span
-              className={`px-3 py-1 rounded-md text-sm font-medium ${listing.type === 'rent'
-                ? 'bg-red-600 text-white'
-                : 'bg-green-600 text-white'
-                }`}
+              className={`px-3 py-1 rounded-md text-sm font-medium ${
+                listing.type === "rent"
+                  ? "bg-red-600 text-white"
+                  : "bg-green-600 text-white"
+              }`}
             >
-              {listing.type === 'rent' ? 'For Rent' : 'For Sale'}
+              {listing.type === "rent" ? "For Rent" : "For Sale"}
             </span>
           </div>
 
@@ -156,13 +160,18 @@ const ListingPage = () => {
 
           {currentUser && listing.userref !== currentUser._id && !contact && (
             <div className="mt-8 flex justify-center">
-              <button onClick={() => setContact(true)} className="bg-black text-white px-6 py-3 rounded-full text-lg font-medium shadow-md hover:bg-gray-800 transition duration-300">
+              <button
+                onClick={() => setContact(true)}
+                className="bg-black text-white px-6 py-3 rounded-full text-lg font-medium shadow-md hover:bg-gray-800 transition duration-300"
+              >
                 Contact Agent
               </button>
               <button onClick={() => setContact(false)}></button>
             </div>
           )}
-          {contact && <Contact listing={listing} onClose={() => setContact(false)} />}
+          {contact && (
+            <Contact listing={listing} onClose={() => setContact(false)} />
+          )}
         </div>
       )}
     </div>
